@@ -5,9 +5,13 @@ import com.binance.api.client.BinanceApiRestClient;
 import com.binance.api.client.BinanceApiWebSocketClient;
 import com.binance.api.client.domain.market.AggTrade;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import pubsub.Message;
+import pubsub.PubSubManager;
 
 /**
  * Illustrates how to use the aggTrades event stream to create a local cache of trades for a symbol.
@@ -20,9 +24,16 @@ public class AggTradesCacher {
      */
     private Map<Long, AggTrade> aggTradesCache;
     private final String symbol;
+    private final PubSubManager pubSubManager;
+    private List<AggTrade> aggTradesEventList = new ArrayList<>();
 
-    public AggTradesCacher(String symbol) {
+    public AggTradesCacher(String symbol, PubSubManager pubSubManager) {
         this.symbol = symbol;
+        this.pubSubManager = pubSubManager;
+    }
+    
+    public List<AggTrade> getAggTradesEventList() {
+        return aggTradesEventList;
     }
 
     /**
@@ -62,7 +73,11 @@ public class AggTradesCacher {
 
             // Store the updated agg trade in the cache
             aggTradesCache.put(aggregatedTradeId, updateAggTrade);
-            System.out.println(updateAggTrade);
+            aggTradesEventList.add(updateAggTrade);
+            //System.out.println(updateAggTrade);
+            
+            pubSubManager.broadcast(updateAggTrade);
+            
         });
     }
 

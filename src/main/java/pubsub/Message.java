@@ -1,21 +1,17 @@
 package pubsub;
 
-import java.util.Map;
+public class Message<T> {
+    private T topic;
 
-import com.binance.api.client.domain.market.Candlestick;
-
-public class Message {
-    private Map<Long, Candlestick> topic;
-
-    public Message(Map<Long, Candlestick> candlesticksCache) {
-        this.topic = candlesticksCache;
+    public Message(T topic) {
+        this.topic = topic;
     }
 
-    public Map<Long, Candlestick> getTopic() {
+    public T getTopic() {
         return topic;
     }
 
-    public void setTopic(Map<Long, Candlestick> topic) {
+    public void setTopic(T topic) {
         this.topic = topic;
     }
 }

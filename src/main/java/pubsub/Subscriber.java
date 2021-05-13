@@ -14,7 +14,13 @@ public abstract class Subscriber {
         this.subscriberMsgList = subscriberMsgList;
     }
 
-    public abstract void addSubscriber(PubSubBroker broker);
+    public void clearSubscriberMsgList() { subscriberMsgList.clear(); }
+
+    public void printSubscriberMsgList() {
+        for (Message message: subscriberMsgList) {
+            System.out.println(message.getTopic());
+        }
+    }
 
     public abstract void unSubscribe(PubSubBroker broker);
 }

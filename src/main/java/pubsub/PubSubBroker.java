@@ -41,6 +41,7 @@ public class PubSubBroker {
                     List<Message> subscriberList = subscriber.getSubscriberMsgList();
                     subscriberList.add(message);
                     subscriber.setSubscriberMsgList(subscriberList);
+                    //System.out.println("Sent: " + message.getTopic());
                 }
             }
         }

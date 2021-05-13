@@ -17,10 +17,10 @@ public class CandlesticksManager {
         this.candlestickCacher = new CandlesticksCacher(symbol, interval);
         this.symbol = symbol;
         this.interval = interval;
-    }
-    
-    public void getCandlesticksData() {
         candlestickCacher.initializeCandlestickCache();
+    }
+
+    public void startCandlesticksEventStream() {
         candlestickCacher.startCandlestickEventStreaming();
     }
     
