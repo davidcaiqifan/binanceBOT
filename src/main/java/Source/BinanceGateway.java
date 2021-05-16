@@ -90,7 +90,6 @@ public class BinanceGateway {
 
             // Store the updated agg trade in the cache
             aggTradesCache.put(aggregatedTradeId, updateAggTrade);
-            System.out.println(updateAggTrade);
 
             // Publish updated agg trade
             try {
@@ -111,12 +110,10 @@ public class BinanceGateway {
 
         client.onDepthEvent(symbol.toLowerCase(), response -> {
             if (response.getUpdateId() > orderBookLastUpdateId) {
-                System.out.println(response);
                 orderBookLastUpdateId = response.getUpdateId();
                 updateOrderBook(getAsks(), response.getAsks());
                 updateOrderBook(getBids(), response.getBids());
-                printOrderBookCache();
-
+                
                 try {
                     marketDataManager.getEventManager().publish(response);
                 } catch (InterruptedException e) {
@@ -172,25 +169,5 @@ public class BinanceGateway {
      */
     public Map<String, NavigableMap<BigDecimal, BigDecimal>> getOrderBookCache() {
         return orderBookCache;
-    }
-
-    /**
-     * Prints the cached order book / depth of a symbol as well as the best ask and bid price in the book.
-     */
-    private void printOrderBookCache() {
-        System.out.println(orderBookCache);
-        System.out.println("ASKS:");
-        getAsks().entrySet().forEach(entry -> System.out.println(toOrderBookCacheEntryString(entry)));
-        System.out.println("BIDS:");
-        getBids().entrySet().forEach(entry -> System.out.println(toOrderBookCacheEntryString(entry)));
-        System.out.println("BEST ASK: " + toOrderBookCacheEntryString(getBestAsk()));
-        System.out.println("BEST BID: " + toOrderBookCacheEntryString(getBestBid()));
-    }
-
-    /**
-     * Pretty prints an order book entry in the format "price / quantity".
-     */
-    private static String toOrderBookCacheEntryString(Map.Entry<BigDecimal, BigDecimal> orderBookCacheEntry) {
-        return orderBookCacheEntry.getKey().toPlainString() + " / " + orderBookCacheEntry.getValue();
     }
 }

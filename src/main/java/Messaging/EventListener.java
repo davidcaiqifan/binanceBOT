@@ -1,11 +1,14 @@
 package Messaging;
 
-import com.binance.api.client.domain.market.AggTrade;
-import com.binance.api.client.domain.market.OrderBook;
+import com.binance.api.client.domain.event.AggTradeEvent;
+import com.binance.api.client.domain.event.DepthEvent;
+import Scheduling.ScheduleEvent;
 
 public interface EventListener {
 
-    void handleEvent(OrderBook orderBook);
+    void handleEvent(DepthEvent orderBook);
 
-    void handleEvent(AggTrade aggTrade);
+    void handleEvent(AggTradeEvent aggTrade);
+    
+    void handleEvent(ScheduleEvent timer) throws InterruptedException;
 }

@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import com.binance.api.client.domain.market.AggTrade;
-import com.binance.api.client.domain.market.OrderBook;
+import com.binance.api.client.domain.event.AggTradeEvent;
+import com.binance.api.client.domain.event.DepthEvent;
+import Scheduling.ScheduleEvent;
 
 public class EventBroker<T> {
     private BlockingQueue<T> eventQueue = new ArrayBlockingQueue<>(1024);
@@ -16,23 +17,25 @@ public class EventBroker<T> {
         eventQueue.put(event);
     }
 
-    public void broadcast() {
+    public void broadcast() throws InterruptedException {
         if (eventQueue.isEmpty()) {
             System.out.println("No events to broadcast.");
         } else {
             while (!eventQueue.isEmpty()) {
                 T event = eventQueue.remove();
-                sendToSubscribers(event);
+                sendToListeners(event);
             }
         }
     }
-    
-    public void sendToSubscribers(T event) {
+
+    public void sendToListeners(T event) throws InterruptedException {
         for (EventListener listener : listenerList) {
-            if (event instanceof AggTrade) {
-                listener.handleEvent((AggTrade) event);
-            } else if (event instanceof OrderBook) {
-                listener.handleEvent((OrderBook) event);
+            if (event instanceof AggTradeEvent) {
+                listener.handleEvent((AggTradeEvent) event);
+            } else if (event instanceof DepthEvent) {
+                listener.handleEvent((DepthEvent) event);
+            } else {
+                listener.handleEvent((ScheduleEvent) event);
             }
         }
     }

@@ -3,16 +3,31 @@ package Messaging;
 
 import com.binance.api.client.domain.event.AggTradeEvent;
 import com.binance.api.client.domain.event.DepthEvent;
+import Scheduling.ScheduleEvent;
 
 public class EventManager {
-    private EventBroker<AggTradeEvent> aggTradeBroker = new EventBroker<>();
+    private EventBroker<AggTradeEvent> aggTradesBroker = new EventBroker<>();
     private EventBroker<DepthEvent> orderBookBroker = new EventBroker<>();
+    private EventBroker<ScheduleEvent> scheduleQueue = new EventBroker<>();
 
     public void publish(DepthEvent depthEvent) throws InterruptedException {
         orderBookBroker.addEvent(depthEvent);
+        orderBookBroker.broadcast();
     }
     
     public void publish(AggTradeEvent aggTradeEvent) throws InterruptedException {
-        aggTradeBroker.addEvent(aggTradeEvent);
+        aggTradesBroker.addEvent(aggTradeEvent);
+        aggTradesBroker.broadcast();
+    }
+    
+    public void publish(ScheduleEvent timer) throws InterruptedException {
+        scheduleQueue.addEvent(timer);
+        scheduleQueue.broadcast();
+    }
+
+    public void addListener(EventListener listener) {
+        aggTradesBroker.addListener(listener);
+        orderBookBroker.addListener(listener);
+        scheduleQueue.addListener(listener);
     }
 }

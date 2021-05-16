@@ -1,14 +1,20 @@
 
-import com.binance.api.client.domain.market.AggTrade;
-import OlderCode.AggTradesCacheManager;
-import OlderCode.Subscriber1;
-import OlderCode.PubSubManager;
+import org.quartz.SchedulerException;
+import Analytics.AnalyticManager;
+import Analytics.SimpleMovingAverage;
+import Messaging.EventManager;
+import Scheduling.ScheduleManager;
 import Source.MarketDataManager;
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, SchedulerException {
         MarketDataManager marketDataManager = new MarketDataManager("ETHBTC");
-        marketDataManager.subscriberOrderBook();
+        EventManager eventManager = marketDataManager.getEventManager();
+        ScheduleManager scheduleManager = new ScheduleManager(eventManager);
+        marketDataManager.subscribeTrades();
+        AnalyticManager smaFive = new SimpleMovingAverage(5);
+        eventManager.addListener(smaFive);
+        scheduleManager.periodicCallBack(1000);
     }
 }
 

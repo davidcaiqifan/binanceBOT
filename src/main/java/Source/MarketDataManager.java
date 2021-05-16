@@ -1,12 +1,5 @@
 package Source;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NavigableMap;
-
-import com.binance.api.client.domain.market.AggTrade;
-import com.binance.api.client.domain.market.OrderBook;
 import Messaging.EventManager;
 
 public class MarketDataManager {
