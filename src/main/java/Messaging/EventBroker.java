@@ -12,7 +12,7 @@ import Scheduling.ScheduleEvent;
 public class EventBroker<T> {
     private BlockingQueue<T> eventQueue = new ArrayBlockingQueue<>(1024);
     private List<EventListener> listenerList = new ArrayList<>();
-    
+
     public void addEvent(T event) throws InterruptedException {
         eventQueue.put(event);
     }
@@ -21,6 +21,7 @@ public class EventBroker<T> {
         if (eventQueue.isEmpty()) {
             System.out.println("No events to broadcast.");
         } else {
+            // can change to eventQueue get method 
             while (!eventQueue.isEmpty()) {
                 T event = eventQueue.remove();
                 sendToListeners(event);

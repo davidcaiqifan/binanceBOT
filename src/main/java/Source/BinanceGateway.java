@@ -14,6 +14,7 @@ import com.binance.api.client.BinanceApiWebSocketClient;
 import com.binance.api.client.domain.market.AggTrade;
 import com.binance.api.client.domain.market.OrderBook;
 import com.binance.api.client.domain.market.OrderBookEntry;
+import Messaging.EventManager;
 
 public class BinanceGateway {
 
@@ -22,7 +23,7 @@ public class BinanceGateway {
     private long orderBookLastUpdateId;
 
     private Map<Long, AggTrade> aggTradesCache;
-    private Map<String, NavigableMap<BigDecimal, BigDecimal>> orderBookCache;
+    private Source.OrderBook orderBookCache;
 
     public BinanceGateway(String symbol) {
         BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance();
@@ -51,7 +52,7 @@ public class BinanceGateway {
         BinanceApiRestClient client = factory.newRestClient();
         OrderBook orderBook = client.getOrderBook(symbol.toUpperCase(), 10);
 
-        this.orderBookCache = new HashMap<>();
+        this.orderBookCache = new Source.OrderBook();
         this.orderBookLastUpdateId = orderBook.getLastUpdateId();
 
         NavigableMap<BigDecimal, BigDecimal> asks = new TreeMap<>(Comparator.reverseOrder());
@@ -70,7 +71,7 @@ public class BinanceGateway {
     /**
      * Begins streaming of Agg Trade Events.
      */
-    public void startAggTradesEventStreaming(String symbol, MarketDataManager marketDataManager) {
+    public void startAggTradesEventStreaming(String symbol, EventManager eventManager) {
         BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance();
         BinanceApiWebSocketClient client = factory.newWebSocketClient();
 
@@ -93,7 +94,7 @@ public class BinanceGateway {
 
             // Publish updated agg trade
             try {
-                marketDataManager.getEventManager().publish(response);
+                eventManager.publish(response);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -104,18 +105,18 @@ public class BinanceGateway {
     /**
      * Begins streaming of order book events.
      */
-    public void startOrderBookEventStreaming(String symbol, MarketDataManager marketDataManager) {
+    public void startOrderBookEventStreaming(String symbol, EventManager eventManager) {
         BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance();
         BinanceApiWebSocketClient client = factory.newWebSocketClient();
 
         client.onDepthEvent(symbol.toLowerCase(), response -> {
             if (response.getUpdateId() > orderBookLastUpdateId) {
                 orderBookLastUpdateId = response.getUpdateId();
-                updateOrderBook(getAsks(), response.getAsks());
-                updateOrderBook(getBids(), response.getBids());
+                updateOrderBook(orderBookCache.getAsks(), response.getAsks());
+                updateOrderBook(orderBookCache.getBids(), response.getBids());
                 
                 try {
-                    marketDataManager.getEventManager().publish(response);
+                    eventManager.publish(orderBookCache);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -140,34 +141,5 @@ public class BinanceGateway {
                 lastOrderBookEntries.put(price, qty);
             }
         }
-    }
-
-    public NavigableMap<BigDecimal, BigDecimal> getAsks() {
-        return orderBookCache.get("ASKS");
-    }
-
-    public NavigableMap<BigDecimal, BigDecimal> getBids() {
-        return orderBookCache.get("BIDS");
-    }
-
-    /**
-     * @return the best ask in the order book
-     */
-    private Map.Entry<BigDecimal, BigDecimal> getBestAsk() {
-        return getAsks().lastEntry();
-    }
-
-    /**
-     * @return the best bid in the order book
-     */
-    private Map.Entry<BigDecimal, BigDecimal> getBestBid() {
-        return getBids().firstEntry();
-    }
-
-    /**
-     * @return a depth cache, containing two keys (ASKs and BIDs), and for each, an ordered list of book entries.
-     */
-    public Map<String, NavigableMap<BigDecimal, BigDecimal>> getOrderBookCache() {
-        return orderBookCache;
     }
 }
