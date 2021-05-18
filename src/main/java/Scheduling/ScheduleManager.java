@@ -12,7 +12,7 @@ import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 import Messaging.EventManager;
 
-public class ScheduleManager {
+public class ScheduleManager implements Runnable {
     
     private EventManager em;
     private Scheduler scheduler;
@@ -38,5 +38,14 @@ public class ScheduleManager {
         timer.getJobDataMap().put("em", em);
         scheduler.scheduleJob(timer, trigger);
         scheduler.start();
+    }
+    
+    @Override
+    public void run() {
+        try {
+            periodicCallBack(1000);
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -11,22 +11,34 @@ public class EventManager {
 
     public void publish(Source.OrderBook orderbook) throws InterruptedException {
         orderBookBroker.addEvent(orderbook);
-        orderBookBroker.broadcast();
+        //orderBookBroker.broadcast();
     }
     
     public void publish(AggTradeEvent aggTradeEvent) throws InterruptedException {
         aggTradesBroker.addEvent(aggTradeEvent);
-        aggTradesBroker.broadcast();
+        //aggTradesBroker.broadcast();
     }
     
     public void publish(ScheduleEvent timer) throws InterruptedException {
         scheduleQueue.addEvent(timer);
-        scheduleQueue.broadcast();
+        //scheduleQueue.broadcast();
     }
 
     public void addListener(EventListener listener) {
         aggTradesBroker.addListener(listener);
         orderBookBroker.addListener(listener);
         scheduleQueue.addListener(listener);
+    }
+    
+    public EventBroker getAggTradesBroker() {
+        return aggTradesBroker;
+    }
+
+    public EventBroker getOrderBookBroker() {
+        return orderBookBroker;
+    }
+
+    public EventBroker getScheduleBroker() {
+        return scheduleQueue;
     }
 }
