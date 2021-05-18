@@ -33,8 +33,8 @@ public class EventBroker<T> {
         for (EventListener listener : listenerList) {
             if (event instanceof AggTradeEvent) {
                 listener.handleEvent((AggTradeEvent) event);
-            } else if (event instanceof DepthEvent) {
-                listener.handleEvent((DepthEvent) event);
+            } else if (event instanceof Source.OrderBook) {
+                listener.handleEvent((Source.OrderBook) event);
             } else {
                 listener.handleEvent((ScheduleEvent) event);
             }

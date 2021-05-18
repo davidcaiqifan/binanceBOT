@@ -21,7 +21,6 @@ public class ScheduleManager {
         this.em = em;
         SchedulerFactory schedulerFactory = new StdSchedulerFactory();
         scheduler = schedulerFactory.getScheduler();
-        scheduler.start();
     }
     
     public void periodicCallBack(int intervalMillis) throws SchedulerException {
@@ -38,5 +37,6 @@ public class ScheduleManager {
                 .build();
         timer.getJobDataMap().put("em", em);
         scheduler.scheduleJob(timer, trigger);
+        scheduler.start();
     }
 }

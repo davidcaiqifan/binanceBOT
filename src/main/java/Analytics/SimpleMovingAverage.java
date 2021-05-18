@@ -1,5 +1,6 @@
 package Analytics;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,27 +8,37 @@ import java.util.Map;
 
 import com.binance.api.client.domain.market.AggTrade;
 import Scheduling.ScheduleEvent;
+import Source.OrderBook;
 
 public class SimpleMovingAverage extends AnalyticManager {
     private int period;
-    private Long lastAggTradeId = 0L;
+    private Long lastOrderBookId = 0L;
     private List<List<Double>> recentPrices;
     private int pointer = 0;
 
     public SimpleMovingAverage(int period) {
         super();
         this.period = period;
-        recentPrices = new ArrayList<>(Collections.nCopies(period, new ArrayList<Double>()));
+        recentPrices = new ArrayList<>(Collections.nCopies(period, new ArrayList<>()));
+    }
+    
+    private Double getWeightedMid(OrderBook orderbook) {
+        Double bestBidPrice = orderbook.getBestBid().getKey().doubleValue();
+        Double bestBidQty = orderbook.getBestBid().getValue().doubleValue();
+        Double bestAskPrice = orderbook.getBestAsk().getKey().doubleValue();
+        Double bestAskQty = orderbook.getBestAsk().getValue().doubleValue();
+        Double weightedMid = (bestBidPrice * bestBidQty + bestAskPrice * bestAskQty) / (bestAskQty + bestBidQty);
+        return weightedMid;
     }
 
     public void updateRecentPrices() throws InterruptedException {
-        while(aggTradesCache.isEmpty()) {
+        while(orderBookCache.isEmpty()) {
             Thread.sleep(500);
         }
         List<Double> mostRecentPrices = new ArrayList<>();
-        Map<Long, AggTrade> recentAggTrades = aggTradesCache.tailMap(lastAggTradeId);
-        lastAggTradeId = aggTradesCache.lastKey();
-        recentAggTrades.entrySet().forEach(entry -> mostRecentPrices.add(Double.valueOf(entry.getValue().getPrice())));
+        Map<Long, OrderBook> recentOrderBooks = orderBookCache.tailMap(lastOrderBookId);
+        lastOrderBookId = orderBookCache.lastKey();
+        recentOrderBooks.entrySet().forEach(entry -> mostRecentPrices.add(getWeightedMid(entry.getValue())));
         recentPrices.set(pointer, mostRecentPrices);
         if (pointer >= period - 1) {
             pointer = 0;
@@ -48,7 +59,7 @@ public class SimpleMovingAverage extends AnalyticManager {
                 count++;
             }
         }
-        double movingAverage = totalPrice / count;
+        Double movingAverage = totalPrice / count;
         return movingAverage;
     }
     

@@ -2,13 +2,11 @@ package Messaging;
 
 
 import com.binance.api.client.domain.event.AggTradeEvent;
-import com.binance.api.client.domain.event.DepthEvent;
 import Scheduling.ScheduleEvent;
-import Source.OrderBook;
 
 public class EventManager {
     private EventBroker<AggTradeEvent> aggTradesBroker = new EventBroker<>();
-    private EventBroker<OrderBook> orderBookBroker = new EventBroker<>();
+    private EventBroker<Source.OrderBook> orderBookBroker = new EventBroker<>();
     private EventBroker<ScheduleEvent> scheduleQueue = new EventBroker<>();
 
     public void publish(Source.OrderBook orderbook) throws InterruptedException {

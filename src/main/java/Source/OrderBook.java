@@ -1,11 +1,12 @@
 package Source;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.NavigableMap;
 
 public class OrderBook {
-    private Map<String, NavigableMap<BigDecimal, BigDecimal>> orderBook;
+    private Map<String, NavigableMap<BigDecimal, BigDecimal>> orderBook = new HashMap<>();
 
     public NavigableMap<BigDecimal, BigDecimal> getAsks() {
         return orderBook.get("ASKS");
@@ -22,14 +23,14 @@ public class OrderBook {
     /**
      * @return the best ask in the order book
      */
-    private Map.Entry<BigDecimal, BigDecimal> getBestAsk() {
+    public Map.Entry<BigDecimal, BigDecimal> getBestAsk() {
         return getAsks().lastEntry();
     }
 
     /**
      * @return the best bid in the order book
      */
-    private Map.Entry<BigDecimal, BigDecimal> getBestBid() {
+    public Map.Entry<BigDecimal, BigDecimal> getBestBid() {
         return getBids().firstEntry();
     }
 

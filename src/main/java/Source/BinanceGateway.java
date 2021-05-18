@@ -18,16 +18,12 @@ import Messaging.EventManager;
 
 public class BinanceGateway {
 
-    private BinanceApiRestClient client;
-
     private long orderBookLastUpdateId;
 
     private Map<Long, AggTrade> aggTradesCache;
     private Source.OrderBook orderBookCache;
 
     public BinanceGateway(String symbol) {
-        BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance();
-        client = factory.newRestClient();
         initializeOrderBookCache(symbol);
         initializeAggTradesCache(symbol);
     }
@@ -36,6 +32,8 @@ public class BinanceGateway {
      * Initializes the aggTrades cache by using the REST API.
      */
     public void initializeAggTradesCache(String symbol) {
+        BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance();
+        BinanceApiRestClient client = factory.newRestClient();
         List<AggTrade> aggTrades = client.getAggTrades(symbol.toUpperCase());
 
         this.aggTradesCache = new HashMap<>();
@@ -91,6 +89,7 @@ public class BinanceGateway {
 
             // Store the updated agg trade in the cache
             aggTradesCache.put(aggregatedTradeId, updateAggTrade);
+            System.out.println(updateAggTrade);
 
             // Publish updated agg trade
             try {
@@ -114,6 +113,7 @@ public class BinanceGateway {
                 orderBookLastUpdateId = response.getUpdateId();
                 updateOrderBook(orderBookCache.getAsks(), response.getAsks());
                 updateOrderBook(orderBookCache.getBids(), response.getBids());
+                // printDepthCache();
                 
                 try {
                     eventManager.publish(orderBookCache);
@@ -141,5 +141,44 @@ public class BinanceGateway {
                 lastOrderBookEntries.put(price, qty);
             }
         }
+    }
+
+    public NavigableMap<BigDecimal, BigDecimal> getAsks() {
+        return orderBookCache.getAsks();
+    }
+
+    public NavigableMap<BigDecimal, BigDecimal> getBids() {
+        return orderBookCache.getBids();
+    }
+
+    /**
+     * @return the best ask in the order book
+     */
+    private Map.Entry<BigDecimal, BigDecimal> getBestAsk() {
+        return getAsks().lastEntry();
+    }
+
+    /**
+     * @return the best bid in the order book
+     */
+    private Map.Entry<BigDecimal, BigDecimal> getBestBid() {
+        return getBids().firstEntry();
+    }
+
+    /**
+     * Prints the cached order book / depth of a symbol as well as the best ask and bid price in the book.
+     */
+    private void printDepthCache() {
+        System.out.println(orderBookCache);
+        System.out.println("ASKS:");
+        getAsks().entrySet().forEach(entry -> System.out.println(toDepthCacheEntryString(entry)));
+        System.out.println("BIDS:");
+        getBids().entrySet().forEach(entry -> System.out.println(toDepthCacheEntryString(entry)));
+        System.out.println("BEST ASK: " + toDepthCacheEntryString(getBestAsk()));
+        System.out.println("BEST BID: " + toDepthCacheEntryString(getBestBid()));
+    }
+
+    private static String toDepthCacheEntryString(Map.Entry<BigDecimal, BigDecimal> depthCacheEntry) {
+        return depthCacheEntry.getKey().toPlainString() + " / " + depthCacheEntry.getValue();
     }
 }
