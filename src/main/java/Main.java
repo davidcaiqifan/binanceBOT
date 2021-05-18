@@ -5,6 +5,7 @@ import java.util.concurrent.Executors;
 import org.quartz.SchedulerException;
 
 import Analytics.AnalyticManager;
+import Analytics.SignalGenerator;
 import Analytics.SimpleMovingAverage;
 import Messaging.EventManager;
 import Scheduling.ScheduleManager;
@@ -18,15 +19,14 @@ public class Main {
         MarketDataManager marketDataManager = new MarketDataManager("ETHBTC", eventManager);
         ScheduleManager scheduleManager = new ScheduleManager(eventManager);
         
-        // Create listeners and add to listener list
-        AnalyticManager smaFive = new SimpleMovingAverage(5, eventManager.getAggTradesBroker(), eventManager.getOrderBookBroker(), eventManager.getScheduleBroker());
-        eventManager.addListener(smaFive);
+        // Create signal generator
+        SignalGenerator signalGenerator = new SignalGenerator(5, 10, eventManager);
 
         // Executor service for multithreading
         ExecutorService threadPool = Executors.newFixedThreadPool(3);
         threadPool.execute(marketDataManager);
         threadPool.execute(scheduleManager);
-        threadPool.execute(smaFive);
+        threadPool.execute(signalGenerator);
         // need to shutdown?
     }
 }

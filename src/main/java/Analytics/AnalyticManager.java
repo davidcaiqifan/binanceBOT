@@ -9,7 +9,7 @@ import com.binance.api.client.domain.market.AggTrade;
 import Messaging.EventListener;
 import Source.OrderBook;
 
-public abstract class AnalyticManager implements EventListener, Runnable {
+public abstract class AnalyticManager implements EventListener {
     protected NavigableMap<Long, AggTrade> aggTradesCache = new TreeMap<>();
     protected NavigableMap<Long, OrderBook> orderBookCache =
             new TreeMap<>();
