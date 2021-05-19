@@ -24,11 +24,11 @@ public class EventManager {
         //scheduleQueue.broadcast();
     }
 
-    public void addListener(EventListener listener) {
-        aggTradesBroker.addListener(listener);
-        orderBookBroker.addListener(listener);
-        scheduleQueue.addListener(listener);
-    }
+//    public void addListener(EventListener listener) {
+//        aggTradesBroker.addListener(listener);
+//        orderBookBroker.addListener(listener);
+//        scheduleQueue.addListener(listener);
+//    }
     
     public EventBroker getAggTradesBroker() {
         return aggTradesBroker;

@@ -4,30 +4,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
 
-import com.binance.api.client.domain.market.AggTrade;
-import Messaging.EventBroker;
-import Scheduling.ScheduleEvent;
 import Source.OrderBook;
 
-public class SimpleMovingAverage extends AnalyticManager {
+public class SimpleMovingAverage {
     private int period = 0;
     private Long lastOrderBookId = 0L;
     private List<List<Double>> recentPrices;
     private int pointer = 0;
-    private EventBroker<AggTrade> aggTradesBroker;
-    public EventBroker<Source.OrderBook> orderBookBroker;
-    public EventBroker<ScheduleEvent> scheduleQueue;
-    private Double movingAverage = 0.0;
-    private SignalGenerator signalGenerator;
-
-    public SimpleMovingAverage(int period, SignalGenerator signalGenerator, EventBroker<AggTrade> aggTradesBroker, EventBroker<OrderBook> orderBookBroker, EventBroker<ScheduleEvent> scheduleQueue) {
+    
+    public SimpleMovingAverage(int period) {
         this.period = period;
         recentPrices = new ArrayList<>(Collections.nCopies(period, new ArrayList<>()));
-        this.aggTradesBroker = aggTradesBroker;
-        this.orderBookBroker = orderBookBroker;
-        this.scheduleQueue = scheduleQueue;
-        this.signalGenerator = signalGenerator;
     }
     
     private Double getWeightedMid(OrderBook orderbook) {
@@ -39,7 +28,7 @@ public class SimpleMovingAverage extends AnalyticManager {
         return weightedMid;
     }
 
-    public void updateRecentPrices() throws InterruptedException {
+    public void updateRecentPrices(NavigableMap<Long, OrderBook> orderBookCache) throws InterruptedException {
         while(orderBookCache.isEmpty()) {
             Thread.sleep(500);
         }
@@ -55,12 +44,14 @@ public class SimpleMovingAverage extends AnalyticManager {
         }
     }
 
-    public Double calculateMovingAverage() {
+    // should return Null if not enough observations
+    public Double getMovingAverage() {
         Double totalPrice = 0.0;
         int count = 0;
         for (List<Double> priceList : recentPrices) {
             if (priceList.isEmpty()) {
-                break;
+                System.out.println("Not enough data yet!");
+                return 0.0;
             }
             for (Double price : priceList) {
                 totalPrice += price;
@@ -68,20 +59,16 @@ public class SimpleMovingAverage extends AnalyticManager {
             }
         }
         Double movingAverage = totalPrice / count;
-        return movingAverage;
-    }
-
-    public Double getMovingAverage() {
-        return movingAverage;
-    }
-
-    @Override
-    public void handleEvent(ScheduleEvent timer) throws InterruptedException {
-        updateRecentPrices();
-        movingAverage = calculateMovingAverage();
         System.out.println("SMA" + period + ": " + movingAverage);
-        signalGenerator.generateSignal();
+        return movingAverage;
     }
+    
+//
+//    public void handleEvent(ScheduleEvent timer) throws InterruptedException {
+//        updateRecentPrices();
+//        movingAverage = calculateMovingAverage();
+//        signalGenerator.generateSignal();
+//    }
 
 //    @Override
 //    public void run() {

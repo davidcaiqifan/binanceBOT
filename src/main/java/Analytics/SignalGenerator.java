@@ -1,29 +1,21 @@
 package Analytics;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import Messaging.EventManager;
-import Scheduling.ScheduleEvent;
-import Source.OrderBook;
 
-public class SignalGenerator implements Runnable {
+public class SignalGenerator {
     
     private SimpleMovingAverage sma1;
     private SimpleMovingAverage sma2;
-    private EventManager eventManager;
     private int currentPosition;
     private Double movingAvg1;
     private Double movingAvg2;
     private DescriptiveStatistics trades = new DescriptiveStatistics();
+    private AnalyticManager am;
     
-    public SignalGenerator(int period1, int period2, EventManager eventManager) {
-        this.eventManager = eventManager;
-        sma1 = new SimpleMovingAverage(period1, this, eventManager.getAggTradesBroker(), eventManager.getOrderBookBroker(), eventManager.getScheduleBroker());
-        sma2 = new SimpleMovingAverage(period2, this, eventManager.getAggTradesBroker(), eventManager.getOrderBookBroker(), eventManager.getScheduleBroker());
-    }
-    
-    private void initialize() {
-        eventManager.addListener(sma1);
-        eventManager.addListener(sma2);
+    public SignalGenerator(SimpleMovingAverage sma1, SimpleMovingAverage sma2, AnalyticManager am) {
+        this.sma1 = sma1;
+        this.sma2 = sma2;
+        this.am = am;
     }
 
     public void generateSignal() {
@@ -42,13 +34,13 @@ public class SignalGenerator implements Runnable {
             if (movingAvg2 > movingAvg1) {
                 System.out.println("Sell Signal");
                 currentPosition = -1;
-                trades.addValue(sma1.orderBookCache.lastEntry().getValue().getBestAsk().getKey().doubleValue());
+                trades.addValue(am.orderBookCache.lastEntry().getValue().getBestAsk().getKey().doubleValue());
             }
         } else {
             if (movingAvg1 > movingAvg2) {
                 System.out.println("Buy Signal");
                 currentPosition = 1;
-                trades.addValue(-1 * sma1.orderBookCache.lastEntry().getValue().getBestAsk().getKey()
+                trades.addValue(-1 * am.orderBookCache.lastEntry().getValue().getBestAsk().getKey()
                         .doubleValue());
             }
         }
@@ -56,21 +48,6 @@ public class SignalGenerator implements Runnable {
     
     public DescriptiveStatistics getTrades() {
         return trades;
-    }
-
-    @Override
-    public void run() {
-        initialize();
-        while (true) {
-            try {
-                sma1.handleEvent((OrderBook) sma1.orderBookBroker.get());
-                sma1.handleEvent((ScheduleEvent) sma1.scheduleQueue.get());
-                sma2.handleEvent((OrderBook) sma2.orderBookBroker.get());
-                sma2.handleEvent((ScheduleEvent) sma2.scheduleQueue.get());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
     
     

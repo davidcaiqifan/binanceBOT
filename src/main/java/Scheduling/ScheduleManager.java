@@ -12,7 +12,7 @@ import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 import Messaging.EventManager;
 
-public class ScheduleManager implements Runnable {
+public class ScheduleManager {
     
     private EventManager em;
     private Scheduler scheduler;
@@ -23,9 +23,8 @@ public class ScheduleManager implements Runnable {
         scheduler = schedulerFactory.getScheduler();
     }
     
-    public void periodicCallBack(int intervalMillis) throws SchedulerException {
+    public void periodicCallBack(int intervalMillis, String tag) throws SchedulerException {
         Trigger trigger = TriggerBuilder.newTrigger()
-                .withIdentity(intervalMillis + "ms Trigger")
                 .startNow()
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .withIntervalInMilliseconds(intervalMillis)
@@ -33,19 +32,21 @@ public class ScheduleManager implements Runnable {
                 .build();
         
         JobDetail timer = JobBuilder.newJob(Timer.class)
-                .withIdentity(intervalMillis + "ms Timer")
                 .build();
         timer.getJobDataMap().put("em", em);
+        timer.getJobDataMap().put("tag", tag);
         scheduler.scheduleJob(timer, trigger);
         scheduler.start();
     }
     
-    @Override
-    public void run() {
-        try {
-            periodicCallBack(1000);
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-        }
-    }
+    //periodic callback should be called by signal generator (call twice for 5 and 10 seconds)
+    
+//    @Override
+//    public void run() {
+//        try {
+//            periodicCallBack(1000, "SMA5");
+//        } catch (SchedulerException e) {
+//            e.printStackTrace();   
+//        }
+//    }
 }

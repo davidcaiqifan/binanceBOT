@@ -1,19 +1,18 @@
 package Messaging;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 
 public class EventBroker<T> {
     private BlockingQueue<T> eventQueue = new ArrayBlockingQueue<>(1024);
-    private List<EventListener> listenerList = new ArrayList<>();
+    // private List<EventListener> listenerList = new ArrayList<>();
 
     public void addEvent(T event) throws InterruptedException {
         eventQueue.put(event);
     }
 
+    // add method to filter out non-listeners
     public T get() throws InterruptedException {
         return eventQueue.take();
     }
@@ -42,20 +41,20 @@ public class EventBroker<T> {
 //        }
 //    }
 
-    public void addListener(EventListener listener) {
-        if (!listenerList.contains(listener)) {
-            listenerList.add(listener);
-        } else {
-            System.out.println("Listener already exists in list.");
-        }
-    }
-    
-    public void removeListener(EventListener listener) {
-        if (listenerList.contains(listener)) {
-            listenerList.remove(listener);
-        } else {
-            System.out.println("Listener does not exist in list");
-        }
-    }
+//    public void addListener(EventListener listener) {
+//        if (!listenerList.contains(listener)) {
+//            listenerList.add(listener);
+//        } else {
+//            System.out.println("Listener already exists in list.");
+//        }
+//    }
+//    
+//    public void removeListener(EventListener listener) {
+//        if (listenerList.contains(listener)) {
+//            listenerList.remove(listener);
+//        } else {
+//            System.out.println("Listener does not exist in list");
+//        }
+//    }
     
 }
