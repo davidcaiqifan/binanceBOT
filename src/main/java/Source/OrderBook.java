@@ -5,17 +5,31 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NavigableMap;
 
+/**
+ * OrderBook class represents an Order Book with bid and ask entries.
+ */
 public class OrderBook {
+
+    // Identity field
     private Map<String, NavigableMap<BigDecimal, BigDecimal>> orderBook = new HashMap<>();
 
+    /**
+     * Returns a TreeMap of ask entries.
+     */
     public NavigableMap<BigDecimal, BigDecimal> getAsks() {
         return orderBook.get("ASKS");
     }
 
+    /**
+     * Returns a TreeMap of bid entries.
+     */
     public NavigableMap<BigDecimal, BigDecimal> getBids() {
         return orderBook.get("BIDS");
     }
 
+    /**
+     * Puts the TreeMap of bid or ask entries in the orderBook based on its key.
+     */
     public void put(String string, NavigableMap<BigDecimal, BigDecimal> map) {
         orderBook.put(string, map);
     }

@@ -14,8 +14,12 @@ import com.binance.api.client.BinanceApiWebSocketClient;
 import com.binance.api.client.domain.market.AggTrade;
 import com.binance.api.client.domain.market.OrderBook;
 import com.binance.api.client.domain.market.OrderBookEntry;
+
 import Messaging.EventManager;
 
+/**
+ * Binance Gateway connects to the Binance REST and WebSocket APIs.
+ */
 public class BinanceGateway {
 
     private long orderBookLastUpdateId;
@@ -23,6 +27,9 @@ public class BinanceGateway {
     private Map<Long, AggTrade> aggTradesCache;
     private Source.OrderBook orderBookCache;
 
+    /**
+     * Creates a Binance Gateway with given symbol and initializes OrderBook and AggTrade cache
+     */
     public BinanceGateway(String symbol) {
         initializeOrderBookCache(symbol);
         initializeAggTradesCache(symbol);
@@ -67,7 +74,7 @@ public class BinanceGateway {
     }
 
     /**
-     * Begins streaming of Agg Trade Events.
+     * Begins streaming of Agg Trade Events using WebSocket API.
      */
     public void startAggTradesEventStreaming(String symbol, EventManager eventManager) {
         BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance();
@@ -102,7 +109,7 @@ public class BinanceGateway {
     }
 
     /**
-     * Begins streaming of order book events.
+     * Begins streaming of order book events using WebSocket API.
      */
     public void startOrderBookEventStreaming(String symbol, EventManager eventManager) {
         BinanceApiClientFactory factory = BinanceApiClientFactory.newInstance();
@@ -113,8 +120,7 @@ public class BinanceGateway {
                 orderBookLastUpdateId = response.getUpdateId();
                 updateOrderBook(orderBookCache.getAsks(), response.getAsks());
                 updateOrderBook(orderBookCache.getBids(), response.getBids());
-                // printDepthCache();
-                
+
                 try {
                     eventManager.publish(orderBookCache);
                 } catch (InterruptedException e) {

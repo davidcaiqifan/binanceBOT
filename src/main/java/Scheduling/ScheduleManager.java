@@ -1,7 +1,6 @@
 package Scheduling;
 
 import org.quartz.JobBuilder;
-import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -10,19 +9,29 @@ import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
+
 import Messaging.EventManager;
 
+/**
+ * ScheduleManager manages ScheduleEvents and executes jobs at intervals.
+ */
 public class ScheduleManager {
-    
+
     private EventManager em;
     private Scheduler scheduler;
-    
+
+    /**
+     * Initializes ScheduleManager with EventManager.
+     */
     public ScheduleManager(EventManager em) throws SchedulerException {
         this.em = em;
         SchedulerFactory schedulerFactory = new StdSchedulerFactory();
         scheduler = schedulerFactory.getScheduler();
     }
-    
+
+    /**
+     * Starts the scheduler and executes timer job at intervals of intervalMillis.
+     */
     public void periodicCallBack(int intervalMillis, String tag) throws SchedulerException {
         Trigger trigger = TriggerBuilder.newTrigger()
                 .startNow()
@@ -30,7 +39,7 @@ public class ScheduleManager {
                         .withIntervalInMilliseconds(intervalMillis)
                         .repeatForever())
                 .build();
-        
+
         JobDetail timer = JobBuilder.newJob(Timer.class)
                 .build();
         timer.getJobDataMap().put("em", em);
@@ -38,15 +47,4 @@ public class ScheduleManager {
         scheduler.scheduleJob(timer, trigger);
         scheduler.start();
     }
-    
-    //periodic callback should be called by signal generator (call twice for 5 and 10 seconds)
-    
-//    @Override
-//    public void run() {
-//        try {
-//            periodicCallBack(1000, "SMA5");
-//        } catch (SchedulerException e) {
-//            e.printStackTrace();   
-//        }
-//    }
 }

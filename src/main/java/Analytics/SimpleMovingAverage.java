@@ -8,17 +8,26 @@ import java.util.NavigableMap;
 
 import Source.OrderBook;
 
+/**
+ * Calculates Simple moving average given window.
+ */
 public class SimpleMovingAverage {
-    private int period = 0;
+    private int period;
     private Long lastOrderBookId = 0L;
     private List<List<Double>> recentPrices;
     private int pointer = 0;
-    
+
+    /**
+     * Initializes a SimpleMovingAverage object based on period given.
+     */
     public SimpleMovingAverage(int period) {
         this.period = period;
         recentPrices = new ArrayList<>(Collections.nCopies(period, new ArrayList<>()));
     }
-    
+
+    /**
+     * Returns the weighted middle of the best bid and best ask in the orderbook.
+     */
     private Double getWeightedMid(OrderBook orderbook) {
         Double bestBidPrice = orderbook.getBestBid().getKey().doubleValue();
         Double bestBidQty = orderbook.getBestBid().getValue().doubleValue();
@@ -28,8 +37,13 @@ public class SimpleMovingAverage {
         return weightedMid;
     }
 
+    /**
+     * Updates recentPrices list with weighted middle prices of new order books.
+     * New order books are order books with a orderBookId > lastOrderBookId.
+     * Uses a pointer to keep track of where to write new price list into recentPrices list.
+     */
     public void updateRecentPrices(NavigableMap<Long, OrderBook> orderBookCache) throws InterruptedException {
-        while(orderBookCache.isEmpty()) {
+        while (orderBookCache.isEmpty()) {
             Thread.sleep(500);
         }
         List<Double> mostRecentPrices = new ArrayList<>();
@@ -44,7 +58,10 @@ public class SimpleMovingAverage {
         }
     }
 
-    // should return Null if not enough observations
+    /**
+     * Calculates average of prices in recentPrices list.
+     * Returns zero if there is insufficient data to calculate moving average.
+     */
     public Double getMovingAverage() {
         Double totalPrice = 0.0;
         int count = 0;
@@ -62,23 +79,4 @@ public class SimpleMovingAverage {
         System.out.println("SMA" + period + ": " + movingAverage);
         return movingAverage;
     }
-    
-//
-//    public void handleEvent(ScheduleEvent timer) throws InterruptedException {
-//        updateRecentPrices();
-//        movingAverage = calculateMovingAverage();
-//        signalGenerator.generateSignal();
-//    }
-
-//    @Override
-//    public void run() {
-//        try {
-//            while (true) {
-//                handleEvent((OrderBook) orderBookBroker.get());
-//                handleEvent((ScheduleEvent) scheduleQueue.get());
-//            }
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }
