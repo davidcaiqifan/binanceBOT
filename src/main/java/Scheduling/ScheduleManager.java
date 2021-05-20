@@ -13,7 +13,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import Messaging.EventManager;
 
 /**
- * ScheduleManager manages ScheduleEvents and executes jobs at intervals.
+ * ScheduleManager manages ScheduleEvents and executes jobs at given intervals.
  */
 public class ScheduleManager {
 

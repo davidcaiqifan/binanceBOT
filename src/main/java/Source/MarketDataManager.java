@@ -28,7 +28,7 @@ public class MarketDataManager implements Runnable {
     }
 
     /**
-     * Starts streaming of trade events from Binance.
+     * Starts streaming of events from Binance.
      */
     public void subscribeTrades() {
         gateway.startAggTradesEventStreaming(symbol, eventManager);

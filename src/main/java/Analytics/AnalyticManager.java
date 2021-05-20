@@ -44,8 +44,8 @@ public class AnalyticManager implements EventListener, Runnable {
      */
     private void initialize() {
         try {
-            scheduleManager.periodicCallBack(2000, "sma1");
-            scheduleManager.periodicCallBack(2000, "sma2");
+            scheduleManager.periodicCallBack(500, "sma1");
+            scheduleManager.periodicCallBack(500, "sma2");
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
