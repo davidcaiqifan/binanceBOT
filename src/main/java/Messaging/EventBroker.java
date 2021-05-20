@@ -24,4 +24,8 @@ public class EventBroker<T> {
     public T get() throws InterruptedException {
         return eventQueue.take();
     }
+
+    public BlockingQueue<T> getEventQueue() {
+        return eventQueue;
+    }
 }

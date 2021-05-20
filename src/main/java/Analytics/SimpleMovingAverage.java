@@ -1,9 +1,5 @@
 package Analytics;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.NavigableMap;
 
 import Source.OrderBook;
@@ -12,22 +8,22 @@ import Source.OrderBook;
  * Calculates Simple moving average given window.
  */
 public class SimpleMovingAverage {
-    private int period;
+    private int window;
     private Double[] recentPrices;
     private int pointer = 0;
 
     /**
-     * Initializes a SimpleMovingAverage object based on period given.
+     * Initializes a SimpleMovingAverage object based on window given.
      */
-    public SimpleMovingAverage(int period) {
-        this.period = period;
-        recentPrices = new Double[period];
+    public SimpleMovingAverage(int window) {
+        this.window = window;
+        recentPrices = new Double[window];
     }
 
     /**
      * Returns the weighted middle of the best bid and best ask in the orderbook.
      */
-    private Double getWeightedMid(OrderBook orderbook) {
+    protected Double getWeightedMid(OrderBook orderbook) {
         Double bestBidPrice = orderbook.getBestBid().getKey().doubleValue();
         Double bestBidQty = orderbook.getBestBid().getValue().doubleValue();
         Double bestAskPrice = orderbook.getBestAsk().getKey().doubleValue();
@@ -46,7 +42,7 @@ public class SimpleMovingAverage {
         }
         OrderBook latestOrderBook = orderBookCache.lastEntry().getValue();
         recentPrices[pointer] = getWeightedMid(latestOrderBook);
-        if (pointer >= period - 1) {
+        if (pointer >= window - 1) {
             pointer = 0;
         } else {
             pointer++;
@@ -69,7 +65,15 @@ public class SimpleMovingAverage {
             count++;
         }
         Double movingAverage = totalPrice / count;
-        System.out.println("SMA" + period + ": " + movingAverage);
+        System.out.println("SMA" + window + ": " + movingAverage);
         return movingAverage;
+    }
+    
+    protected Double[] getRecentPrices() {
+        return recentPrices;
+    }
+
+    protected void setRecentPrice(int index, Double price) {
+        recentPrices[index] = price;
     }
 }

@@ -46,4 +46,11 @@ public class EventManager {
     public EventBroker getScheduleBroker() {
         return scheduleBroker;
     }
+
+    /**
+     * @return the aggTradesBroker.
+     */
+    public EventBroker getAggTradesBroker() {
+        return aggTradesBroker;
+    }
 }

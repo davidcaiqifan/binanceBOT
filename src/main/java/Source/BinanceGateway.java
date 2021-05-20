@@ -96,7 +96,7 @@ public class BinanceGateway {
 
             // Store the updated agg trade in the cache
             aggTradesCache.put(aggregatedTradeId, updateAggTrade);
-            System.out.println(updateAggTrade);
+            // System.out.println(updateAggTrade);
 
             // Publish updated agg trade
             try {
@@ -186,5 +186,13 @@ public class BinanceGateway {
 
     private static String toDepthCacheEntryString(Map.Entry<BigDecimal, BigDecimal> depthCacheEntry) {
         return depthCacheEntry.getKey().toPlainString() + " / " + depthCacheEntry.getValue();
+    }
+    
+    public Map<Long, AggTrade> getAggTradesCache() {
+        return aggTradesCache;
+    }
+    
+    public Source.OrderBook getOrderBookCache() {
+        return orderBookCache;
     }
 }

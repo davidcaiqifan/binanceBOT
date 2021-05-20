@@ -35,14 +35,14 @@ public class AnalyticManager implements EventListener, Runnable {
         orderBookBroker = eventManager.getOrderBookBroker();
         scheduleBroker = eventManager.getScheduleBroker();
         this.scheduleManager = scheduleManager;
-        signalGenerator = new SignalGenerator(sma1, sma2, this);
+        signalGenerator = new SignalGenerator(this);
     }
 
     /**
      * Initiates periodicCallBack in ScheduleManager.
      * Both SMA1 and SMA2 callback intervals are set at 2000 milliseconds.
      */
-    private void initialize() {
+    protected void initialize() {
         try {
             scheduleManager.periodicCallBack(500, "sma1");
             scheduleManager.periodicCallBack(500, "sma2");
@@ -77,6 +77,14 @@ public class AnalyticManager implements EventListener, Runnable {
      */
     public NavigableMap<Long, OrderBook> getOrderBookCache() {
         return orderBookCache;
+    }
+    
+    public SimpleMovingAverage getSma1() {
+        return sma1;
+    }
+
+    public SimpleMovingAverage getSma2() {
+        return sma2;
     }
 
     /**

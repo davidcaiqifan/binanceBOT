@@ -34,6 +34,7 @@ public class ScheduleManager {
      */
     public void periodicCallBack(int intervalMillis, String tag) throws SchedulerException {
         Trigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity(tag + " (" + intervalMillis + "ms) Trigger")
                 .startNow()
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .withIntervalInMilliseconds(intervalMillis)
@@ -41,10 +42,15 @@ public class ScheduleManager {
                 .build();
 
         JobDetail timer = JobBuilder.newJob(Timer.class)
+                .withIdentity(tag + " (" + intervalMillis + "ms) Job")
                 .build();
         timer.getJobDataMap().put("em", em);
         timer.getJobDataMap().put("tag", tag);
         scheduler.scheduleJob(timer, trigger);
         scheduler.start();
+    }
+    
+    public Scheduler getScheduler() {
+        return scheduler;
     }
 }
