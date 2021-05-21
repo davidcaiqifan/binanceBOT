@@ -30,7 +30,7 @@ public class CrossOverManagerTest {
     public void handleOrderBookEventTest() throws SchedulerException, InterruptedException {
         EventManager em = new EventManager();
         ScheduleManager sm = new ScheduleManager(em);
-        CrossOverManager cm = new CrossOverManager(5, 10);
+        CrossOverManager cm = new CrossOverManager(5, 10, 10.0);
         AnalyticsManager am = new AnalyticsManager(em, sm);
         am.addListener(cm);
         OrderBook orderBook = new OrderBookBuilder().withAsk(new BigDecimal(0.5), new BigDecimal(1000)).build();

@@ -18,6 +18,7 @@ import Source.OrderBook;
 public class CrossOverManager implements EventListener {
     private SimpleMovingAverage sma1;
     private SimpleMovingAverage sma2;
+    private Double threshold;
     private NavigableMap<Long, OrderBook> orderBookCache = new TreeMap<>();
     private long orderBookId = 0L;
     private SignalGenerator signalGenerator;
@@ -26,9 +27,10 @@ public class CrossOverManager implements EventListener {
      * Creates a AnalyticManager.
      * Creates two SimpleMovingAverage objects based on windows given and creates a SignalGenerator with the two SMAs.
      */
-    public CrossOverManager(int window1, int window2) {
+    public CrossOverManager(int window1, int window2, Double threshold) {
         sma1 = new SimpleMovingAverage(window1);
         sma2 = new SimpleMovingAverage(window2);
+        this.threshold = threshold;
         signalGenerator = new SignalGenerator(this);
     }
 
@@ -50,7 +52,7 @@ public class CrossOverManager implements EventListener {
         } else if (timer.getTag().equals("sma2")) {
             sma2.updateRecentPrices(orderBookCache);
         }
-        signalGenerator.generateSignal();
+        signalGenerator.generateSignal(threshold);
     }
 
     /**

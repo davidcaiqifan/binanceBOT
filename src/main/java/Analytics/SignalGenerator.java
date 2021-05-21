@@ -12,6 +12,7 @@ public class SignalGenerator {
     private int currentPosition;
     private Double movingAvg1;
     private Double movingAvg2;
+    // trades not implemented yet, still a work in progress!
     private DescriptiveStatistics trades = new DescriptiveStatistics();
     private CrossOverManager am;
 
@@ -29,39 +30,29 @@ public class SignalGenerator {
      * Generates Trade signal using MA crossover strategy.
      * currentPosition is set to zero if there is insufficient data, set to one if sma1 > sma2, and set to -1 if sma2 > sma1.
      */
-    public void generateSignal() {
+    public void generateSignal(Double threshold) {
         movingAvg1 = sma1.getMovingAverage();
         movingAvg2 = sma2.getMovingAverage();
         System.out.println(currentPosition);
         if (movingAvg2 == 0 || movingAvg1 == 0) {
             currentPosition = 0;
         } else if (currentPosition == 0) {
-            if (movingAvg1 > movingAvg2) {
+            if (movingAvg1 > movingAvg2 + threshold) {
                 currentPosition = 1;
-            } else if (movingAvg2 > movingAvg1) {
+            } else if (movingAvg2 > movingAvg1 + threshold) {
                 currentPosition = -1;
             }
         } else if (currentPosition == 1) {
-            if (movingAvg2 > movingAvg1) {
+            if (movingAvg2 > movingAvg1 + threshold) {
                 System.out.println("Sell Signal");
                 currentPosition = -1;
-//                trades.addValue(am.getOrderBookCache().lastEntry().getValue().getBestAsk().getKey().doubleValue());
             }
         } else {
-            if (movingAvg1 > movingAvg2) {
+            if (movingAvg1 > movingAvg2 + threshold) {
                 System.out.println("Buy Signal");
                 currentPosition = 1;
-//                trades.addValue(-1 * am.getOrderBookCache().lastEntry().getValue().getBestAsk().getKey()
-//                        .doubleValue());
             }
         }
-    }
-
-    /**
-     * Returns record of trades done for analysis of PnL.
-     */
-    public DescriptiveStatistics getTrades() {
-        return trades;
     }
     
     protected SimpleMovingAverage getSma1() {

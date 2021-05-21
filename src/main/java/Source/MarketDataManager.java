@@ -17,21 +17,21 @@ public class MarketDataManager implements Runnable {
     public MarketDataManager(String symbol, EventManager eventManager) {
         this.symbol = symbol;
         this.eventManager = eventManager;
-        gateway = new BinanceGateway(symbol);
+        gateway = new BinanceGateway(symbol, eventManager);
     }
 
     /**
      * Starts streaming of orderbook events from Binance.
      */
     public void subscribeOrderBook() {
-        gateway.startOrderBookEventStreaming(symbol, eventManager);
+        gateway.startOrderBookEventStreaming();
     }
 
     /**
      * Starts streaming of events from Binance.
      */
     public void subscribeTrades() {
-        gateway.startAggTradesEventStreaming(symbol, eventManager);
+        gateway.startAggTradesEventStreaming();
     }
 
     @Override
