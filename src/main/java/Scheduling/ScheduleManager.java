@@ -49,7 +49,7 @@ public class ScheduleManager {
         scheduler.scheduleJob(timer, trigger);
         scheduler.start();
     }
-    
+
     public Scheduler getScheduler() {
         return scheduler;
     }

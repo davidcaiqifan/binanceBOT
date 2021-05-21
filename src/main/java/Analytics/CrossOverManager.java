@@ -3,13 +3,8 @@ package Analytics;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 
-import org.quartz.SchedulerException;
-
-import Messaging.EventBroker;
 import Messaging.EventListener;
-import Messaging.EventManager;
 import Scheduling.ScheduleEvent;
-import Scheduling.ScheduleManager;
 import Source.OrderBook;
 
 /**
@@ -61,7 +56,7 @@ public class CrossOverManager implements EventListener {
     public NavigableMap<Long, OrderBook> getOrderBookCache() {
         return orderBookCache;
     }
-    
+
     public SimpleMovingAverage getSma1() {
         return sma1;
     }

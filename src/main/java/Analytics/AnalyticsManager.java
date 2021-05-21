@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.quartz.SchedulerException;
-import com.binance.api.client.domain.account.Order;
+
 import Messaging.EventBroker;
 import Messaging.EventListener;
 import Messaging.EventManager;
@@ -17,33 +17,42 @@ public class AnalyticsManager implements EventListener, Runnable {
     private EventBroker scheduleBroker;
     private List<EventListener> listeners = new ArrayList<>();
     private ScheduleManager scheduleManager;
-    
+
+    /**
+     * Analytics Manager polls events from the broker's queue to broadcast to all subscribed listeners.
+     */
     public AnalyticsManager(EventManager eventManager, ScheduleManager scheduleManager) {
         orderBookBroker = eventManager.getOrderBookBroker();
         scheduleBroker = eventManager.getScheduleBroker();
         this.scheduleManager = scheduleManager;
     }
-    
+
     public void addListener(EventListener listener) {
         listeners.add(listener);
     }
-    
+
+    /**
+     * Sends orderBook to all subscribed listeners.
+     */
     public void broadcast(OrderBook orderBook) throws InterruptedException {
         for (EventListener listener : listeners) {
             listener.handleEvent(orderBook);
         }
     }
-    
+
+    /**
+     * Sends timer to all subscribed listeners.
+     */
     public void broadcast(ScheduleEvent timer) throws InterruptedException {
         for (EventListener listener : listeners) {
             listener.handleEvent(timer);
         }
     }
-    
+
     public void handleEvent(OrderBook orderBook) throws InterruptedException {
         broadcast(orderBook);
     }
-    
+
     public void handleEvent(ScheduleEvent timer) throws InterruptedException {
         broadcast(timer);
     }
@@ -76,5 +85,4 @@ public class AnalyticsManager implements EventListener, Runnable {
             }
         }
     }
-    
 }

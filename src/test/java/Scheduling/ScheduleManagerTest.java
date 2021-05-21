@@ -6,10 +6,11 @@ import org.junit.Test;
 import org.quartz.JobKey;
 import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
+
 import Messaging.EventManager;
 
 public class ScheduleManagerTest {
-    
+
     @Test
     public void periodicCallBackTest() throws SchedulerException {
         EventManager eventManager = new EventManager();

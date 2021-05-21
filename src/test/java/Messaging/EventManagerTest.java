@@ -5,13 +5,15 @@ import static org.junit.Assert.assertEquals;
 import java.util.TreeMap;
 
 import org.junit.Test;
+
 import com.binance.api.client.domain.event.AggTradeEvent;
+
 import Scheduling.ScheduleEvent;
 import Source.OrderBook;
 
 public class EventManagerTest {
     private EventManager eventManager = new EventManager();
-    
+
     @Test
     public void publish_orderBook() throws InterruptedException {
         OrderBook orderBook = new OrderBook();

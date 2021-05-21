@@ -1,6 +1,5 @@
 package Source;
 
-import java.util.HashMap;
 import java.util.List;
 
 import com.binance.api.client.BinanceApiClientFactory;
@@ -15,7 +14,7 @@ import Messaging.EventManager;
  * Binance Gateway connects to the Binance REST and WebSocket APIs.
  */
 public class BinanceGateway {
-    
+
     private String symbol;
     private OrderBookManager orderBookManager;
     private AggTradeManager aggTradeManager;

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.binance.api.client.domain.event.AggTradeEvent;
 import com.binance.api.client.domain.market.AggTrade;
+
 import Messaging.EventManager;
 
 public class AggTradeManager {
@@ -17,13 +18,19 @@ public class AggTradeManager {
         this.eventManager = eventManager;
     }
 
+    /**
+     * Initializes AggTrades Cache with list of aggTrades given.
+     */
     public void initializeAggTradesCache(List<AggTrade> aggTrades) {
         this.aggTradesCache = new HashMap<>();
         for (AggTrade aggTrade : aggTrades) {
             aggTradesCache.put(aggTrade.getAggregatedTradeId(), aggTrade);
         }
     }
-    
+
+    /**
+     * Stores AggTrade from Binance into aggTradeCache.
+     */
     public void handleResponse(AggTradeEvent response) {
         Long aggregatedTradeId = response.getAggregatedTradeId();
         AggTrade updateAggTrade = aggTradesCache.get(aggregatedTradeId);

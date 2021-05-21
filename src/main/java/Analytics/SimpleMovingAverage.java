@@ -68,7 +68,7 @@ public class SimpleMovingAverage {
         System.out.println("SMA" + window + ": " + movingAverage);
         return movingAverage;
     }
-    
+
     protected Double[] getRecentPrices() {
         return recentPrices;
     }

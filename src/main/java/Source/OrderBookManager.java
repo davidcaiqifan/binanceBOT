@@ -8,21 +8,25 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import com.binance.api.client.domain.event.DepthEvent;
-import com.binance.api.client.domain.market.AggTrade;
 import com.binance.api.client.domain.market.OrderBookEntry;
+
 import Messaging.EventManager;
 
 public class OrderBookManager {
 
     private long orderBookLastUpdateId;
-    
+
     private Source.OrderBook orderBookCache;
     private EventManager eventManager;
-    
+
     public OrderBookManager(EventManager eventManager) {
         this.eventManager = eventManager;
     }
 
+    /**
+     * Initializes the orderBookCache with two keys "BIDS" and "ASKS", each holding a
+     * map of bid and ask entries respectively.
+     */
     public void initializeOrderBookCache(com.binance.api.client.domain.market.OrderBook orderBook) {
         this.orderBookCache = new Source.OrderBook();
         this.orderBookLastUpdateId = orderBook.getLastUpdateId();
@@ -39,7 +43,10 @@ public class OrderBookManager {
         }
         orderBookCache.put("BIDS", bids);
     }
-    
+
+    /**
+     * Merges deltas with the current orderBook and publishes the resulting orderBook.
+     */
     public void handleResponse(DepthEvent response) {
         if (response.getUpdateId() > orderBookLastUpdateId) {
             orderBookLastUpdateId = response.getUpdateId();

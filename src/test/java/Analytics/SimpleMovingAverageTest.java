@@ -7,6 +7,7 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import org.junit.Test;
+
 import Source.OrderBook;
 import Source.OrderBookBuilder;
 
@@ -62,5 +63,4 @@ public class SimpleMovingAverageTest {
         sma.setRecentPrice(0, Double.valueOf(1));
         assertEquals(sma.getMovingAverage(), Double.valueOf(0));
     }
-    
 }

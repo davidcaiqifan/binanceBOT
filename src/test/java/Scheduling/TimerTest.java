@@ -12,27 +12,28 @@ import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
+
 import Messaging.EventManager;
 
 public class TimerTest {
-    
+
     @Test
     public void executeTest() throws SchedulerException, InterruptedException {
         SchedulerFactory schedulerFactory = new StdSchedulerFactory();
         Scheduler scheduler = schedulerFactory.getScheduler();
-        
+
         Trigger trigger = TriggerBuilder.newTrigger()
                 .startNow()
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .withIntervalInMilliseconds(100)
                         .repeatForever())
                 .build();
-        
+
         JobDetail timer = JobBuilder.newJob(Timer.class)
                 .build();
 
         EventManager em = new EventManager();
-        timer.getJobDataMap().put("em",  em);
+        timer.getJobDataMap().put("em", em);
         timer.getJobDataMap().put("tag", "Tag");
         scheduler.scheduleJob(timer, trigger);
         scheduler.start();

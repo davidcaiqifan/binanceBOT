@@ -4,13 +4,14 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.quartz.SchedulerException;
+
 import Messaging.EventManager;
 import Scheduling.ScheduleManager;
 
 public class SignalGeneratorTest {
-    
+
     private SignalGenerator signalGenerator;
-    
+
     public SignalGeneratorTest() throws SchedulerException {
         EventManager em = new EventManager();
         ScheduleManager sm = new ScheduleManager(em);
@@ -19,7 +20,7 @@ public class SignalGeneratorTest {
         am.addListener(cm);
         signalGenerator = new SignalGenerator(cm);
     }
-    
+
     @Test
     public void generateSignalTest() {
         signalGenerator.getSma1().setRecentPrice(0, Double.valueOf(1));

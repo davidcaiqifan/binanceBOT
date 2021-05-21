@@ -6,13 +6,13 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
  * Signal Generator keeps track of two moving averages and generates trade signals based on MA crossover strategy.
  */
 public class SignalGenerator {
-    
+
     private SimpleMovingAverage sma1;
     private SimpleMovingAverage sma2;
     private int currentPosition;
     private Double movingAvg1;
     private Double movingAvg2;
-    // trades not implemented yet, still a work in progress!
+    // PnL analytics not implemented yet, still a work in progress!
     private DescriptiveStatistics trades = new DescriptiveStatistics();
     private CrossOverManager am;
 
@@ -28,7 +28,8 @@ public class SignalGenerator {
 
     /**
      * Generates Trade signal using MA crossover strategy.
-     * currentPosition is set to zero if there is insufficient data, set to one if sma1 > sma2, and set to -1 if sma2 > sma1.
+     * currentPosition is set to zero if there is insufficient data, set to one if sma1 > sma2 + threshold,
+     * and set to -1 if sma2 > sma1 + threshold.
      */
     public void generateSignal(Double threshold) {
         movingAvg1 = sma1.getMovingAverage();
@@ -54,7 +55,7 @@ public class SignalGenerator {
             }
         }
     }
-    
+
     protected SimpleMovingAverage getSma1() {
         return sma1;
     }
@@ -62,7 +63,7 @@ public class SignalGenerator {
     protected SimpleMovingAverage getSma2() {
         return sma2;
     }
-    
+
     protected int getCurrentPosition() {
         return currentPosition;
     }

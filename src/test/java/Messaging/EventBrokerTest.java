@@ -8,7 +8,7 @@ import java.util.concurrent.BlockingQueue;
 import org.junit.Test;
 
 public class EventBrokerTest {
-    
+
     @Test
     public void addEventTest() throws InterruptedException {
         EventBroker<String> eventBroker = new EventBroker<>();
