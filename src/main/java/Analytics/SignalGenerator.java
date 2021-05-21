@@ -13,13 +13,13 @@ public class SignalGenerator {
     private Double movingAvg1;
     private Double movingAvg2;
     private DescriptiveStatistics trades = new DescriptiveStatistics();
-    private AnalyticManager am;
+    private CrossOverManager am;
 
     /**
      * Initializes SignalGenerator with two simple moving averages and an analytics manager.
      * Analytics Manager is referenced to access orderBookCache to retrieve latest prices for PnL analytics.
      */
-    public SignalGenerator(AnalyticManager am) {
+    public SignalGenerator(CrossOverManager am) {
         this.sma1 = am.getSma1();
         this.sma2 = am.getSma2();
         this.am = am;

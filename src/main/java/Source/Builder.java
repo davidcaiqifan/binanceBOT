@@ -5,7 +5,8 @@ import java.util.concurrent.Executors;
 
 import org.quartz.SchedulerException;
 
-import Analytics.AnalyticManager;
+import Analytics.AnalyticsManager;
+import Analytics.CrossOverManager;
 import Messaging.EventManager;
 import Scheduling.ScheduleManager;
 
@@ -34,11 +35,13 @@ public class Builder {
         EventManager eventManager = new EventManager();
         MarketDataManager marketDataManager = new MarketDataManager(symbol, eventManager);
         ScheduleManager scheduleManager = new ScheduleManager(eventManager);
-        AnalyticManager analyticManager = new AnalyticManager(window1, window2, eventManager, scheduleManager);
+        CrossOverManager crossOverManager = new CrossOverManager(window1, window2);
+        AnalyticsManager analyticsManager = new AnalyticsManager(eventManager, scheduleManager);
+        analyticsManager.addListener(crossOverManager);
 
         // Executor service for multithreading
         ExecutorService threadPool = Executors.newFixedThreadPool(3);
         threadPool.execute(marketDataManager);
-        threadPool.execute(analyticManager);
+        threadPool.execute(analyticsManager);
     }
 }

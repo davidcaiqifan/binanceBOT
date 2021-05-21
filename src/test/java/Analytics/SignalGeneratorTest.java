@@ -14,8 +14,10 @@ public class SignalGeneratorTest {
     public SignalGeneratorTest() throws SchedulerException {
         EventManager em = new EventManager();
         ScheduleManager sm = new ScheduleManager(em);
-        AnalyticManager am = new AnalyticManager(1, 2, em, sm);
-        signalGenerator = new SignalGenerator(am);
+        CrossOverManager cm = new CrossOverManager(1, 2);
+        AnalyticsManager am = new AnalyticsManager(em, sm);
+        am.addListener(cm);
+        signalGenerator = new SignalGenerator(cm);
     }
     
     @Test

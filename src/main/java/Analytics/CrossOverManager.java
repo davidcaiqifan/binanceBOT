@@ -15,40 +15,21 @@ import Source.OrderBook;
 /**
  * Analytics Manager consolidates two simple moving averages, the signal generator, and schedule manager.
  */
-public class AnalyticManager implements EventListener, Runnable {
+public class CrossOverManager implements EventListener {
     private SimpleMovingAverage sma1;
     private SimpleMovingAverage sma2;
-    private EventBroker orderBookBroker;
-    private EventBroker scheduleBroker;
     private NavigableMap<Long, OrderBook> orderBookCache = new TreeMap<>();
     private long orderBookId = 0L;
     private SignalGenerator signalGenerator;
-    private ScheduleManager scheduleManager;
 
     /**
      * Creates a AnalyticManager.
      * Creates two SimpleMovingAverage objects based on windows given and creates a SignalGenerator with the two SMAs.
      */
-    public AnalyticManager(int window1, int window2, EventManager eventManager, ScheduleManager scheduleManager) {
+    public CrossOverManager(int window1, int window2) {
         sma1 = new SimpleMovingAverage(window1);
         sma2 = new SimpleMovingAverage(window2);
-        orderBookBroker = eventManager.getOrderBookBroker();
-        scheduleBroker = eventManager.getScheduleBroker();
-        this.scheduleManager = scheduleManager;
         signalGenerator = new SignalGenerator(this);
-    }
-
-    /**
-     * Initiates periodicCallBack in ScheduleManager.
-     * Both SMA1 and SMA2 callback intervals are set at 2000 milliseconds.
-     */
-    protected void initialize() {
-        try {
-            scheduleManager.periodicCallBack(500, "sma1");
-            scheduleManager.periodicCallBack(500, "sma2");
-        } catch (SchedulerException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -85,21 +66,5 @@ public class AnalyticManager implements EventListener, Runnable {
 
     public SimpleMovingAverage getSma2() {
         return sma2;
-    }
-
-    /**
-     * Gets orderbook and schedule events from their respective broker's queues, and handles these events.
-     */
-    @Override
-    public void run() {
-        initialize();
-        while (true) {
-            try {
-                handleEvent((OrderBook) orderBookBroker.get());
-                handleEvent((ScheduleEvent) scheduleBroker.get());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }
